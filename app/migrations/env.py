@@ -14,7 +14,7 @@ from app.config import DATABASE_URL
 
 from app.database import Base
 from app.hotels.models import Hotels
-from app.hotels.models import Rooms
+from app.hotels.rooms.models import Rooms
 from app.bookings.models import Bookings
 from app.users.models import Users
 
