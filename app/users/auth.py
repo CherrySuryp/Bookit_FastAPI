@@ -22,8 +22,8 @@ def verify_password(plain_password, hashed_password) -> bool:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(hours=6)
-    to_encode.update({'exp': expire})
+    token_expiration = datetime.utcnow() + timedelta(hours=1)
+    to_encode.update({'exp': token_expiration})
     encoded_jwt = jwt.encode(
         to_encode, settings.JWT_SECRET, settings.JWT_ENCODING
     )
@@ -32,6 +32,7 @@ def create_access_token(data: dict) -> str:
 
 async def auth_user(email: EmailStr, password: str):
     user = await UsersDAO.find_one_or_none(email=email)
+    # Check if credentials exist
     if not (user and verify_password(password, user.hashed_password)):
         raise IncorrectEmailOrPasswordException
     return user
