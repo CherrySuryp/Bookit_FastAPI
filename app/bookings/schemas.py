@@ -10,8 +10,12 @@ class SBooking(BaseModel):
     date_from: date
     date_to: date
     price: int = 9900
-    total_cost: int = 19800
     total_days: int = 2
+    total_cost: int = 19800
+    image_id: int
+    name: str
+    description: str
+    services: list
 
     class Config:
         orm_mode = True

@@ -34,3 +34,8 @@ RoomCanNotBeBooked = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail = 'No rooms left'
 )
+
+BookingDoesntExistException = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="Booking doesn't exist"
+)

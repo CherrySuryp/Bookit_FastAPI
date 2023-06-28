@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import and_, or_, select, func, insert
+from sqlalchemy import and_, or_, select, func, insert, delete
 
 from dao.base import BaseDAO
 from app.database import engine, async_session_maker
@@ -83,3 +83,49 @@ class BookingDAO(BaseDAO):
                 return new_booking.scalar()
             else:
                 return None
+
+    @classmethod
+    async def delete(
+            cls,
+            user_id: int,
+            booking_id: int
+    ):
+        async with async_session_maker() as session:
+            query = delete(cls.model).where(
+                and_(
+                    Bookings.user_id == user_id,
+                    Bookings.id == booking_id
+                )
+            )
+            await session.execute(query)
+            await session.commit()
+
+    @classmethod
+    async def find_all(
+            cls,
+            user_id: int,
+
+    ):
+        async with async_session_maker() as session:
+            join_rooms = select(
+                Bookings.id,
+                Bookings.room_id,
+                Bookings.user_id,
+                Bookings.date_from,
+                Bookings.date_to,
+                Bookings.price,
+                Bookings.total_days,
+                Bookings.total_cost,
+                Rooms.image_id,
+                Rooms.name,
+                Rooms.description,
+                Rooms.services
+            ).join(
+                Bookings, Bookings.room_id == Rooms.id
+            ).where(
+                Bookings.user_id == user_id
+            )
+
+            result = await session.execute(join_rooms)
+            return result.mappings().all()
+
