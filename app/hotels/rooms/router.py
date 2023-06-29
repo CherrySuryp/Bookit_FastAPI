@@ -10,5 +10,6 @@ router = APIRouter(
 
 
 @router.get('/{hotel_id}/rooms')
-def get_all_rooms(hotel_id, user: Users = Depends(get_current_user)):
+def get_all_rooms(hotel_id):
+
     pass

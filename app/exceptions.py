@@ -39,3 +39,8 @@ BookingDoesntExistException = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="Booking doesn't exist"
 )
+
+HotelNotFoundException = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Hotel not found"
+)
