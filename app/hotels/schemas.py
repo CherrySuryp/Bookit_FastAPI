@@ -18,3 +18,19 @@ class SHotel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SFindHotel(BaseModel):
+    id: int
+    name: str
+    location: str
+    service: list = [
+      "Wi-Fi",
+      "Парковка"
+    ]
+    image_id: int
+    rooms_quantity: int
+    rooms_left: int
+
+    class Config:
+        orm_mode = True

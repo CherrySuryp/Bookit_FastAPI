@@ -11,5 +11,4 @@ router = APIRouter(
 
 @router.get('/{hotel_id}/rooms')
 def get_all_rooms(hotel_id):
-
     pass

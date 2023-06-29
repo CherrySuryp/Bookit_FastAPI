@@ -44,3 +44,8 @@ HotelNotFoundException = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Hotel not found"
 )
+
+AvailableHotelsNotFoundException = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="No hotels were found according to the specified parameters"
+)

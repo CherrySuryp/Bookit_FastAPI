@@ -2,10 +2,9 @@ from datetime import date
 
 from fastapi import APIRouter
 
-from app.exceptions import HotelNotFoundException
+from app.exceptions import HotelNotFoundException, AvailableHotelsNotFoundException
 from app.hotels.dao import HotelsDAO
-from app.hotels.schemas import SHotel
-
+from app.hotels.schemas import SHotel, SFindHotel
 
 router = APIRouter(
     prefix='/hotels',
@@ -14,8 +13,11 @@ router = APIRouter(
 
 
 @router.get('/{location}')
-async def get_hotels(location: str, date_from: date, date_to: date):
-    pass
+async def get_hotels_by_location_and_dates(location: str, date_from: date, date_to: date) -> list[SFindHotel]:
+    found_hotels = await HotelsDAO.find_a_hotel_by_date_and_location(location, date_from, date_to)
+    if not found_hotels:
+        raise AvailableHotelsNotFoundException
+    return found_hotels
 
 
 @router.get('/id/{hotel_id}')
