@@ -9,7 +9,7 @@ from app.users.schema import SUserReg
 
 router = APIRouter(
     prefix='/auth',
-    tags=['Auth and Users']
+    tags=['Reg and auth']
 )
 
 
