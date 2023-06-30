@@ -36,8 +36,13 @@ RoomCanNotBeBooked = HTTPException(
 )
 
 BookingDoesntExistException = HTTPException(
-    status_code=status.HTTP_409_CONFLICT,
+    status_code=status.HTTP_404_NOT_FOUND,
     detail="Booking doesn't exist"
+)
+
+BookingsDoesNotExistException = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="User doesn't have bookings"
 )
 
 HotelNotFoundException = HTTPException(
@@ -48,4 +53,9 @@ HotelNotFoundException = HTTPException(
 AvailableHotelsNotFoundException = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="No hotels were found according to the specified parameters"
+)
+
+RoomsOrHotelNotFoundException = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="No rooms were found according to the specified parameters"
 )

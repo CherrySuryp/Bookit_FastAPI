@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.bookings.dao import BookingDAO
 from app.bookings.schemas import SBooking
-from app.exceptions import RoomCanNotBeBooked, BookingDoesntExistException
+from app.exceptions import RoomCanNotBeBooked, BookingDoesntExistException, BookingsDoesNotExistException
 
 from app.users.dependencies import get_current_user
 from app.users.models import Users
@@ -17,7 +17,9 @@ router = APIRouter(
 
 @router.get('')
 async def get_bookings(user: Users = Depends(get_current_user)) -> list[SBooking]:
-    return await BookingDAO.find_all(user_id=user.id)
+    result = await BookingDAO.find_all(user_id=user.id)
+    if not result:
+        raise BookingsDoesNotExistException
 
 
 @router.post('')

@@ -1,7 +1,10 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends
 
-from app.users.dependencies import get_current_user
-from app.users.models import Users
+from app.exceptions import RoomsOrHotelNotFoundException
+from app.hotels.rooms.schemas import SRooms
+from app.hotels.rooms.dao import RoomsDAO
 
 router = APIRouter(
     prefix='/hotels',
@@ -10,5 +13,8 @@ router = APIRouter(
 
 
 @router.get('/{hotel_id}/rooms')
-def get_all_rooms(hotel_id):
-    pass
+async def get_rooms_by_hotel_and_date(hotel_id: int, date_from: date, date_to: date) -> list[SRooms]:
+    result = await RoomsDAO.get_available_rooms_by_hotel_and_dates(hotel_id, date_from, date_to)
+    if not result:
+        raise RoomsOrHotelNotFoundException
+    return result

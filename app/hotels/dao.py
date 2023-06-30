@@ -13,7 +13,7 @@ class HotelsDAO(BaseDAO):
     model = Hotels
 
     @classmethod
-    async def find_a_hotel_by_date_and_location(
+    async def find_hotels_by_location_and_date(
             cls,
             location: str,
             date_from: date,
@@ -72,8 +72,8 @@ class HotelsDAO(BaseDAO):
                 subquery, subquery.c.hotel_id == Hotels.id, full=True
             ).where(
                 and_(
-                    func.coalesce(subquery.c.rooms_left, Hotels.rooms_quantity) > 0,
-                    Hotels.location.like(f'%{location}%')
+                    Hotels.location.like(f'%{location.capitalize()}%'),
+                    func.coalesce(subquery.c.rooms_left, Hotels.rooms_quantity) > 0
                 )
             ).order_by(desc('rooms_left'))
 
