@@ -15,7 +15,7 @@ from app.images.router import router as router_images
 
 from app.config import settings
 
-app = FastAPI(title='I Booked It!')
+app = FastAPI(title='Bookit!')
 
 origins = [
     "http://localhost:3000"
