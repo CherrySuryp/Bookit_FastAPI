@@ -1,10 +1,8 @@
 import asyncio
 from datetime import date
-from unittest import mock
 
 from fastapi import APIRouter
 
-mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()  # Disables cache for pytest
 from fastapi_cache.decorator import cache
 
 from app.exceptions import HotelNotFoundException, AvailableHotelsNotFoundException, TooMuchDaysException, \

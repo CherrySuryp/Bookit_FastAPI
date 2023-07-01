@@ -1,8 +1,8 @@
 import asyncio
 import json
 from datetime import datetime
+from functools import wraps
 
-from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
 import pytest
@@ -11,12 +11,11 @@ from sqlalchemy import insert
 from app.config import settings
 from app.database import Base, async_session_maker, engine
 
-from app.main import app as fastapi_app
-
 from app.bookings.models import Bookings
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
 from app.users.models import Users
+from unittest import mock
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -53,14 +52,29 @@ async def prepare_database():
         await session.commit()
 
 
+# Disables fastapi-cache during testing
+def mock_cache(*args, **kwargs):
+    def wrapper(func):
+        @wraps(func)
+        async def inner(*args, **kwargs):
+            return await func(*args, **kwargs)
+        return inner
+    return wrapper
+
+
+mock.patch("fastapi_cache.decorator.cache", mock_cache).start()
+
+
 @pytest.fixture(scope="module")
 async def ac():
+    from app.main import app as fastapi_app # Disables fastapi-cache during testing
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
         yield ac
 
 
 @pytest.fixture(scope='session')
 async def authenticated_ac():
+    from app.main import app as fastapi_app # Disables fastapi-cache during testing
     async with AsyncClient(app=fastapi_app, base_url='http://test') as ac:
         await ac.post('/auth/login', json={
             "email": "test@test.com",
