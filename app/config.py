@@ -8,6 +8,17 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
 
+    JWT_SECRET: str
+    JWT_ENCODING: str
+
+    REDIS_HOST: str
+    REDIS_PORT: str
+
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASS: str
+
     @root_validator
     def get_database_url(cls, v):
         v["DATABASE_URL"] = f"postgresql+asyncpg://" \
