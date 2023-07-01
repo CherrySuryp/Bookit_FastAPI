@@ -53,9 +53,9 @@ async def prepare_database():
         await session.commit()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="module")
 async def ac():
-    async with AsyncClient(app=fastapi_app, base_url='http://test') as ac:
+    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
         yield ac
 
 
