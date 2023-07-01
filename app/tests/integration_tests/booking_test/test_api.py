@@ -1,11 +1,16 @@
+import os
+import sys
+
 import pytest
 from httpx import AsyncClient
 
 
+
+
 @pytest.mark.parametrize("room_id, date_from, date_to, email_to, status_code", [
-    *[(4, "2030-05-01", "2030-05-15","iparkhipychev@gmail.com", 200)] * 8,
-    (4, "2030-05-01", "2030-05-15","iparkhipychev@gmail.com", 409),
-    (4, "2030-05-01", "2030-05-15","iparkhipychev@gmail.com", 409),
+    *[(4, "2030-05-01", "2030-05-15", "iparkhipychev@gmail.com", 200)] * 8,
+    (4, "2030-05-01", "2030-05-15", "iparkhipychev@gmail.com", 409),
+    (4, "2030-05-01", "2030-05-15", "iparkhipychev@gmail.com", 409),
 ])
 async def test_add_and_get_booking(
         room_id, date_from, date_to, email_to,

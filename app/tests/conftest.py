@@ -1,3 +1,6 @@
+import sys
+sys.dont_write_bytecode = True
+
 import asyncio
 import json
 from datetime import datetime
