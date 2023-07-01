@@ -1,5 +1,4 @@
 import pytest
-import requests
 from httpx import AsyncClient
 
 
