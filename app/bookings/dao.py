@@ -99,7 +99,7 @@ class BookingDAO(BaseDAO):
                 "user_id": user_id,
                 "room_id": room_id,
                 "date_from": date_from,
-                "date_to": date_to
+                "date_to": date_to,
             }
             logger.error(message, extra=extra, exc_info=True)
 

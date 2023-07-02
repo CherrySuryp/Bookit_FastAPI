@@ -69,16 +69,13 @@ async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
-    logger.info("Request execution time", extra={
-        "process_time": round(process_time, 4)
-    })
+    logger.info(
+        "Request execution time", extra={"process_time": round(process_time, 4)}
+    )
     return response
 
 
-app = VersionedFastAPI(app,
-                       version_format='{major}',
-                       prefix_format='/v{major}'
-                       )
+app = VersionedFastAPI(app, version_format="{major}", prefix_format="/v{major}")
 
 app.mount("/static", StaticFiles(directory="app/static"), "static")
 
