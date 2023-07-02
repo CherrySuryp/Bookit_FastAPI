@@ -1,6 +1,7 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi_versioning import version
 from pydantic import EmailStr
 
 from app.bookings.dao import BookingDAO
@@ -21,6 +22,7 @@ router = APIRouter(
 
 
 @router.get("")
+@version(1)
 async def get_bookings(user: Users = Depends(get_current_user)) -> list[SBooking]:
     result = await BookingDAO.find_all(user_id=user.id)
     if not result:
@@ -28,7 +30,8 @@ async def get_bookings(user: Users = Depends(get_current_user)) -> list[SBooking
     return result
 
 
-@router.post("")  # Don't forget to return param email_to: EmailStr,
+@router.post("")
+@version(1)
 async def add_booking(
     room_id: int,
     date_from: date,
@@ -43,6 +46,7 @@ async def add_booking(
 
 
 @router.delete("")
+@version(1)
 async def delete_booking(booking_id: int, user: Users = Depends(get_current_user)):
     existing_booking = await BookingDAO.find_one_or_none(id=booking_id, user_id=user.id)
     if not existing_booking:

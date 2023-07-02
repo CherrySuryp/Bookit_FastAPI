@@ -3,6 +3,8 @@ import time
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi_versioning import VersionedFastAPI
+
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
@@ -12,6 +14,7 @@ from app.admin.auth import authentication_backend
 from app.admin.views import BookingsAdmin, HotelsAdmin, RoomsAdmin, UserAdmin
 from app.config import settings
 from app.database import engine
+
 
 from app.logger import logger
 
@@ -46,8 +49,6 @@ app.add_middleware(
     ],
 )
 
-app.mount("/static", StaticFiles(directory="app/static"), "static")
-
 app.include_router(router_auth)
 
 app.include_router(router_bookings)
@@ -74,6 +75,16 @@ async def add_process_time_header(request: Request, call_next):
     })
     return response
 
+app = VersionedFastAPI(app,
+    version_format='{major}',
+    prefix_format='/v{major}',
+    # description='Greet users with a nice message',
+    # middleware=[
+    #     Middleware(SessionMiddleware, secret_key='mysecretkey')
+    # ]
+)
+
+app.mount("/static", StaticFiles(directory="app/static"), "static")
 
 admin = Admin(app, engine, authentication_backend=authentication_backend)
 
