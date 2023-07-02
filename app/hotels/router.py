@@ -17,7 +17,6 @@ router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 
 @router.get("/{location}")
-@cache(expire=60)
 async def get_hotels_by_location_and_time(
     location: str, date_from: date, date_to: date
 ) -> list[SFindHotel]:
