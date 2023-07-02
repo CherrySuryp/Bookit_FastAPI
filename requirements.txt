@@ -63,3 +63,5 @@ wcwidth==0.2.6
 websockets==11.0.3
 WTForms==3.0.1
 yarl==1.9.2
+pytest~=7.2.2
+httpx~=0.24.1

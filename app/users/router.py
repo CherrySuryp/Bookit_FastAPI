@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post('/reg')
+@router.post('/register')
 async def reg_user(user_data: SUserReg):
     existing_user = await UsersDAO.find_one_or_none(
         email=user_data.email
