@@ -7,6 +7,8 @@ from sqlalchemy import NullPool
 class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST", "PROD"]
 
+    LOG_LEVEL: Literal["INFO", "DEBUG", "PROD"]
+
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
