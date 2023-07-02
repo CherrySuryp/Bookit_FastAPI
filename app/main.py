@@ -25,7 +25,7 @@ from app.users.router import router as router_auth
 import sentry_sdk
 
 sentry_sdk.init(
-    dsn="https://c66bd81657534fa49873e0dd5b553b96@o4505459592200192.ingest.sentry.io/4505459596132352",
+    dsn = settings.SENTRY_ACCESS,
     traces_sample_rate=1.0,
 )
 
