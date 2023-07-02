@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+import time
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
@@ -8,18 +10,26 @@ from sqladmin import Admin
 
 from app.admin.auth import authentication_backend
 from app.admin.views import BookingsAdmin, HotelsAdmin, RoomsAdmin, UserAdmin
-from app.bookings.router import router as router_bookings
 from app.config import settings
 from app.database import engine
+
+from app.logger import logger
+
+from app.bookings.router import router as router_bookings
 from app.hotels.rooms.router import router as router_rooms
 from app.hotels.router import router as router_hotels
 from app.images.router import router as router_images
 from app.pages.router import router as router_pages
 from app.users.router import router as router_auth
 
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn = settings.SENTRY_ACCESS,
+    traces_sample_rate=1.0,
+)
+
 app = FastAPI(title="Bookit!")
-
-
 origins = ["http://localhost:3000"]
 
 app.add_middleware(
@@ -52,6 +62,17 @@ app.include_router(router_images)
 async def startup():
     redis = aioredis.from_url(f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}")
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    logger.info("Request execution time", extra={
+        "process_time": round(process_time, 4)
+    })
+    return response
 
 
 admin = Admin(app, engine, authentication_backend=authentication_backend)

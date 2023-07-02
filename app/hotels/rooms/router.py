@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from app.exceptions import RoomsOrHotelNotFoundException
 from app.hotels.rooms.dao import RoomsDAO

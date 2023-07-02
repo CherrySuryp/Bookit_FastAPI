@@ -7,6 +7,9 @@ from sqlalchemy import NullPool
 class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST", "PROD"]
 
+    LOG_LEVEL: Literal["INFO", "DEBUG", "PROD"]
+    SENTRY_ACCESS: str
+
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
@@ -34,7 +37,8 @@ class Settings(BaseSettings):
     def get_database_url(cls, v):
         v["DATABASE_URL"] = (
             f"postgresql+asyncpg://"
-            f"{v['DB_USER']}:{v['DB_PASS']}@{v['DB_HOST']}:{v['DB_PORT']}/{v['DB_NAME']}"
+            f"{v['DB_USER']}:{v['DB_PASS']}@{v['DB_HOST']}:"
+            f"{v['DB_PORT']}/{v['DB_NAME']}"
         )
         return v
 

@@ -24,8 +24,8 @@ class RoomsDAO(BaseDAO):
         JOIN hotels on rooms.hotel_id = hotels.id
         WHERE hotels.id = 5 AND
         (
-            (bookings.date_from >= '2024-01-02' AND bookings.date_from <= '2024-01-10') OR
-            (bookings.date_from <= '2024-01-02' AND bookings.date_to > '2024-01-02')
+        (bookings.date_from >= '2024-01-02' AND bookings.date_from <= '2024-01-10') OR
+        (bookings.date_from <= '2024-01-02' AND bookings.date_to > '2024-01-02')
         )
         GROUP BY room_id, rooms.quantity
         )
@@ -39,7 +39,8 @@ class RoomsDAO(BaseDAO):
 
         Ответ пользователю: для каждого
         номера должно быть указано: id, hotel_id, name, description, services, price, quantity, image_id, total_cost
-        (стоимость бронирования номера за весь период), rooms_left (количество оставшихся номеров).
+        (стоимость бронирования номера за весь период),
+        rooms_left (количество оставшихся номеров).
         """
         async with async_session_maker() as session:
             subquery = (
