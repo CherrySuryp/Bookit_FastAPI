@@ -18,7 +18,7 @@ router = APIRouter(
 
 @router.get('/{location}')
 @cache(expire=60)
-async def get_hotels_by_location_and_time(location: str, date_from: date, date_to: date):
+async def get_hotels_by_location_and_time(location: str, date_from: date, date_to: date) -> list[SFindHotel]:
     await asyncio.sleep(2)
     if (date_to - date_from).days > 30:
         raise TooMuchDaysException  # 403

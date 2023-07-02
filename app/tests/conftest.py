@@ -1,6 +1,3 @@
-import sys
-sys.dont_write_bytecode = True
-
 import asyncio
 import json
 from datetime import datetime
@@ -55,7 +52,8 @@ async def prepare_database():
         await session.commit()
 
 
-# Disables fastapi-cache during testing
+# Disables fastapi-cache lib during testing. I found this block of code on github :)
+# https://github.com/long2ice/fastapi-cache/issues/49
 def mock_cache(*args, **kwargs):
     def wrapper(func):
         @wraps(func)
@@ -67,17 +65,19 @@ def mock_cache(*args, **kwargs):
 
 mock.patch("fastapi_cache.decorator.cache", mock_cache).start()
 
+# End of stolen block of code
+
 
 @pytest.fixture(scope="module")
 async def ac():
-    from app.main import app as fastapi_app # Disables fastapi-cache during testing
+    from app.main import app as fastapi_app  # Disables fastapi-cache during testing
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
         yield ac
 
 
 @pytest.fixture(scope='session')
 async def authenticated_ac():
-    from app.main import app as fastapi_app # Disables fastapi-cache during testing
+    from app.main import app as fastapi_app  # Disables fastapi-cache during testing
     async with AsyncClient(app=fastapi_app, base_url='http://test') as ac:
         await ac.post('/auth/login', json={
             "email": "test@test.com",
