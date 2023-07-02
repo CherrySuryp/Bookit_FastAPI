@@ -18,7 +18,8 @@ class HotelsDAO(BaseDAO):
     ):
         """
         WITH available_hotels AS (
-            SELECT hotels.id as hotel_id, (hotels.rooms_quantity - count(hotel_id)) AS rooms_left
+            SELECT hotels.id as hotel_id,
+            (hotels.rooms_quantity - count(hotel_id)) AS rooms_left
             FROM hotels
             JOIN rooms on hotels.id = rooms.hotel_id
             JOIN bookings on rooms.id = bookings.room_id
@@ -28,8 +29,9 @@ class HotelsDAO(BaseDAO):
             GROUP BY hotels.id)
 
         SELECT hotels.id, hotels.name, hotels.location,
-               hotels.service, hotels.image_id, hotels.rooms_quantity, coalesce(available_hotels.rooms_left,
-               rooms_quantity) AS rooms_left
+               hotels.service, hotels.image_id,
+               hotels.rooms_quantity,
+               coalesce(available_hotels.rooms_left, rooms_quantity) AS rooms_left
         FROM hotels
         FULL JOIN available_hotels ON available_hotels.hotel_id = hotels.id
         WHERE coalesce(available_hotels.rooms_left, rooms_quantity) > 0
