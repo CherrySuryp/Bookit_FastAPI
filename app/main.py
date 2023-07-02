@@ -15,7 +15,6 @@ from app.admin.views import BookingsAdmin, HotelsAdmin, RoomsAdmin, UserAdmin
 from app.config import settings
 from app.database import engine
 
-
 from app.logger import logger
 
 from app.bookings.router import router as router_bookings
@@ -28,7 +27,7 @@ from app.users.router import router as router_auth
 import sentry_sdk
 
 sentry_sdk.init(
-    dsn = settings.SENTRY_ACCESS,
+    dsn=settings.SENTRY_ACCESS,
     traces_sample_rate=1.0,
 )
 
@@ -75,14 +74,11 @@ async def add_process_time_header(request: Request, call_next):
     })
     return response
 
+
 app = VersionedFastAPI(app,
-    version_format='{major}',
-    prefix_format='/v{major}',
-    # description='Greet users with a nice message',
-    # middleware=[
-    #     Middleware(SessionMiddleware, secret_key='mysecretkey')
-    # ]
-)
+                       version_format='{major}',
+                       prefix_format='/v{major}'
+                       )
 
 app.mount("/static", StaticFiles(directory="app/static"), "static")
 
