@@ -72,7 +72,7 @@ mock.patch("fastapi_cache.decorator.cache", mock_cache).start()
 async def ac():
     from app.main import app as fastapi_app  # Disables fastapi-cache during testing
 
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(app=fastapi_app, base_url="http://test/v1") as ac:
         yield ac
 
 
@@ -80,7 +80,7 @@ async def ac():
 async def authenticated_ac():
     from app.main import app as fastapi_app  # Disables fastapi-cache during testing
 
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(app=fastapi_app, base_url="http://test/v1") as ac:
         await ac.post(
             "/auth/login", json={"email": "test@test.com", "password": "test"}
         )
