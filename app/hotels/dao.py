@@ -6,7 +6,7 @@ from app.bookings.models import Bookings
 from app.database import async_session_maker
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
-from dao.base import BaseDAO
+from app.dao.base import BaseDAO
 
 
 class HotelsDAO(BaseDAO):

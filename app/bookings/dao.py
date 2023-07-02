@@ -1,4 +1,3 @@
-import time
 from datetime import date
 
 from sqlalchemy import and_, delete, func, insert, or_, select
@@ -9,7 +8,7 @@ from app.hotels.rooms.models import Rooms
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.logger import logger
-from dao.base import BaseDAO
+from app.dao.base import BaseDAO
 
 
 class BookingDAO(BaseDAO):
