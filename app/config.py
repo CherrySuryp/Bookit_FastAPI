@@ -32,15 +32,19 @@ class Settings(BaseSettings):
 
     @root_validator
     def get_database_url(cls, v):
-        v["DATABASE_URL"] = f"postgresql+asyncpg://" \
-                            f"{v['DB_USER']}:{v['DB_PASS']}@{v['DB_HOST']}:{v['DB_PORT']}/{v['DB_NAME']}"
+        v["DATABASE_URL"] = (
+            f"postgresql+asyncpg://"
+            f"{v['DB_USER']}:{v['DB_PASS']}@{v['DB_HOST']}:{v['DB_PORT']}/{v['DB_NAME']}"
+        )
         return v
 
     @root_validator
     def get_test_database_url(cls, v):
-        v["TEST_DATABASE_URL"] = f"postgresql+asyncpg://" \
-                            f"{v['TEST_DB_USER']}:{v['TEST_DB_PASS']}@{v['TEST_DB_HOST']}:" \
-                            f"{v['TEST_DB_PORT']}/{v['TEST_DB_NAME']}"
+        v["TEST_DATABASE_URL"] = (
+            f"postgresql+asyncpg://"
+            f"{v['TEST_DB_USER']}:{v['TEST_DB_PASS']}@{v['TEST_DB_HOST']}:"
+            f"{v['TEST_DB_PORT']}/{v['TEST_DB_NAME']}"
+        )
         return v
 
     class Config:
@@ -49,7 +53,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-if settings.MODE == 'TEST':
+if settings.MODE == "TEST":
     DATABASE_URL = settings.TEST_DATABASE_URL
     DATABASE_PARAMS = {"poolclass": NullPool}
 else:

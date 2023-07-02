@@ -1,23 +1,18 @@
-from fastapi import APIRouter, status, Response, Depends
+from fastapi import APIRouter, Depends, Response, status
 
 from app.exceptions import UserAlreadyExistsException
-from app.users.auth import get_password, auth_user, create_access_token
+from app.users.auth import auth_user, create_access_token, get_password
 from app.users.dao import UsersDAO
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 from app.users.schema import SUserReg
 
-router = APIRouter(
-    prefix='/auth',
-    tags=['Reg and auth']
-)
+router = APIRouter(prefix="/auth", tags=["Reg and auth"])
 
 
-@router.post('/register')
+@router.post("/register")
 async def reg_user(user_data: SUserReg):
-    existing_user = await UsersDAO.find_one_or_none(
-        email=user_data.email
-    )
+    existing_user = await UsersDAO.find_one_or_none(email=user_data.email)
     # Before registration, we check if user exists
     if existing_user:
         raise UserAlreadyExistsException
@@ -25,7 +20,7 @@ async def reg_user(user_data: SUserReg):
     await UsersDAO.add(email=user_data.email, hashed_password=hashed_password)
 
 
-@router.post('/login')
+@router.post("/login")
 async def login(response: Response, user_data: SUserReg):
     user = await auth_user(user_data.email, user_data.password)
     access_token = create_access_token({"sub": str(user.id)})
@@ -33,12 +28,12 @@ async def login(response: Response, user_data: SUserReg):
     return {"access_token": access_token}
 
 
-@router.post('/logout')
+@router.post("/logout")
 async def logout(response: Response):
     response.delete_cookie("booking_access_token")
     return status.HTTP_200_OK
 
 
-@router.get('/me')
+@router.get("/me")
 async def read_user_me(user: Users = Depends(get_current_user)):
     return user

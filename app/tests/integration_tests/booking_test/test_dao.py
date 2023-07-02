@@ -1,15 +1,17 @@
 import sys
+
 sys.dont_write_bytecode = True
-from app.bookings.dao import BookingDAO
 from datetime import datetime
+
+from app.bookings.dao import BookingDAO
 
 
 async def test_add_and_get_booking():
     new_booking = await BookingDAO.add(
         user_id=2,
         room_id=2,
-        date_from=datetime.strptime("2023-07-10", '%Y-%m-%d'),
-        date_to=datetime.strptime("2023-07-24", '%Y-%m-%d'),
+        date_from=datetime.strptime("2023-07-10", "%Y-%m-%d"),
+        date_to=datetime.strptime("2023-07-24", "%Y-%m-%d"),
     )
     assert new_booking.user_id == 2
     assert new_booking.room_id == 2
@@ -27,8 +29,8 @@ async def test_add_get_and_delete_booking():
     new_booking = await BookingDAO.add(
         user_id=user_id,
         room_id=room_id,
-        date_from=datetime.strptime(date_from, '%Y-%m-%d'),
-        date_to=datetime.strptime(date_to, '%Y-%m-%d'),
+        date_from=datetime.strptime(date_from, "%Y-%m-%d"),
+        date_to=datetime.strptime(date_to, "%Y-%m-%d"),
     )
     assert new_booking.user_id == user_id
     assert new_booking.room_id == room_id

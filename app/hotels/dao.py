@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import select, and_, or_, func, desc
+from sqlalchemy import and_, desc, func, or_, select
 
 from app.bookings.models import Bookings
 from app.database import async_session_maker
@@ -14,11 +14,7 @@ class HotelsDAO(BaseDAO):
 
     @classmethod
     async def find_hotels_by_location_and_date(
-            cls,
-            location: str,
-            date_from: date,
-            date_to: date
-
+        cls, location: str, date_from: date, date_to: date
     ):
         """
         WITH available_hotels AS (
@@ -41,41 +37,53 @@ class HotelsDAO(BaseDAO):
         ORDER BY rooms_left DESC
         """
         async with async_session_maker() as session:
-            subquery = select(
-                Hotels.id.label('hotel_id'),
-                (Hotels.rooms_quantity - func.count(Rooms.hotel_id)).label('rooms_left')
-            ).join(
-                Rooms, Hotels.id == Rooms.hotel_id
-            ).join(
-                Bookings, Rooms.id == Bookings.room_id
-            ).where(
-                or_(
-                    and_(
-                        Bookings.date_from >= date_from,
-                        Bookings.date_from <= date_to
+            subquery = (
+                select(
+                    Hotels.id.label("hotel_id"),
+                    (Hotels.rooms_quantity - func.count(Rooms.hotel_id)).label(
+                        "rooms_left"
                     ),
-                    and_(
-                        Bookings.date_from <= date_from,
-                        Bookings.date_to > date_from
+                )
+                .join(Rooms, Hotels.id == Rooms.hotel_id)
+                .join(Bookings, Rooms.id == Bookings.room_id)
+                .where(
+                    or_(
+                        and_(
+                            Bookings.date_from >= date_from,
+                            Bookings.date_from <= date_to,
+                        ),
+                        and_(
+                            Bookings.date_from <= date_from,
+                            Bookings.date_to > date_from,
+                        ),
                     )
                 )
-            ).group_by(
-                Hotels.id
-            ).cte('subquery')
+                .group_by(Hotels.id)
+                .cte("subquery")
+            )
 
-            query = select(
-                Hotels.id, Hotels.name, Hotels.location, Hotels.service, Hotels.image_id, Hotels.rooms_quantity,
-                func.coalesce(subquery.c.rooms_left, Hotels.rooms_quantity).label('rooms_left')
-            ).select_from(
-                Hotels
-            ).join(
-                subquery, subquery.c.hotel_id == Hotels.id, full=True
-            ).where(
-                and_(
-                    Hotels.location.like(f'%{location.capitalize()}%'),
-                    func.coalesce(subquery.c.rooms_left, Hotels.rooms_quantity) > 0
+            query = (
+                select(
+                    Hotels.id,
+                    Hotels.name,
+                    Hotels.location,
+                    Hotels.service,
+                    Hotels.image_id,
+                    Hotels.rooms_quantity,
+                    func.coalesce(subquery.c.rooms_left, Hotels.rooms_quantity).label(
+                        "rooms_left"
+                    ),
                 )
-            ).order_by(desc('rooms_left'))
+                .select_from(Hotels)
+                .join(subquery, subquery.c.hotel_id == Hotels.id, full=True)
+                .where(
+                    and_(
+                        Hotels.location.like(f"%{location.capitalize()}%"),
+                        func.coalesce(subquery.c.rooms_left, Hotels.rooms_quantity) > 0,
+                    )
+                )
+                .order_by(desc("rooms_left"))
+            )
 
             result = await session.execute(query)
             return result.mappings().all()

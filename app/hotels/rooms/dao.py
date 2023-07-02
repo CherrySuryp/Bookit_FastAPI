@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import select, and_, or_, func
+from sqlalchemy import and_, func, or_, select
 
 from app.bookings.models import Bookings
 from app.database import async_session_maker
@@ -14,10 +14,7 @@ class RoomsDAO(BaseDAO):
 
     @classmethod
     async def get_available_rooms_by_hotel_and_dates(
-            cls,
-            hotel_id: int,
-            date_from: date,
-            date_to: date
+        cls, hotel_id: int, date_from: date, date_to: date
     ):
         """
         WITH subquery AS (
@@ -45,41 +42,51 @@ class RoomsDAO(BaseDAO):
         (стоимость бронирования номера за весь период), rooms_left (количество оставшихся номеров).
         """
         async with async_session_maker() as session:
-            subquery = select(
-                Bookings.room_id,
-                (Rooms.quantity - func.count(Bookings.room_id).label('rooms_left')).label("rooms_left")
-            ).select_from(
-                Bookings
-            ).join(
-                Rooms, Rooms.id == Bookings.room_id
-            ).join(
-                Hotels, Rooms.hotel_id == Hotels.id
-            ).where(
-                or_(
-                    and_(
-                        Bookings.date_from >= date_from,
-                        Bookings.date_from <= date_to,
-                    ),
-                    and_(
-                        Bookings.date_from <= date_from,
-                        Bookings.date_to > date_from,
-                    ),
+            subquery = (
+                select(
+                    Bookings.room_id,
+                    (
+                        Rooms.quantity
+                        - func.count(Bookings.room_id).label("rooms_left")
+                    ).label("rooms_left"),
                 )
-            ).group_by(
-                Bookings.room_id, Rooms.quantity
-            ).cte('subquery')
+                .select_from(Bookings)
+                .join(Rooms, Rooms.id == Bookings.room_id)
+                .join(Hotels, Rooms.hotel_id == Hotels.id)
+                .where(
+                    or_(
+                        and_(
+                            Bookings.date_from >= date_from,
+                            Bookings.date_from <= date_to,
+                        ),
+                        and_(
+                            Bookings.date_from <= date_from,
+                            Bookings.date_to > date_from,
+                        ),
+                    )
+                )
+                .group_by(Bookings.room_id, Rooms.quantity)
+                .cte("subquery")
+            )
 
-            stmt = select(
-                Rooms.id, Rooms.hotel_id, Rooms.name, Rooms.description,
-                Rooms.services, Rooms.price, Rooms.image_id, Rooms.quantity,
-                func.coalesce(subquery.c.rooms_left, Rooms.quantity).label('available_rooms'),
-                ((date_to - date_from).days * Rooms.price).label('total_cost')
-            ).select_from(
-                Rooms
-            ).join(
-                subquery, subquery.c.room_id == Rooms.id, full=True
-            ).filter(
-                Rooms.hotel_id == hotel_id
+            stmt = (
+                select(
+                    Rooms.id,
+                    Rooms.hotel_id,
+                    Rooms.name,
+                    Rooms.description,
+                    Rooms.services,
+                    Rooms.price,
+                    Rooms.image_id,
+                    Rooms.quantity,
+                    func.coalesce(subquery.c.rooms_left, Rooms.quantity).label(
+                        "available_rooms"
+                    ),
+                    ((date_to - date_from).days * Rooms.price).label("total_cost"),
+                )
+                .select_from(Rooms)
+                .join(subquery, subquery.c.room_id == Rooms.id, full=True)
+                .filter(Rooms.hotel_id == hotel_id)
             )
 
             result = await session.execute(stmt)

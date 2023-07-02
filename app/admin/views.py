@@ -49,4 +49,3 @@ class HotelsAdmin(ModelView, model=Hotels):
     can_delete = True
     can_view_details = True
     column_list = [c.name for c in Hotels.__table__.c]
-
