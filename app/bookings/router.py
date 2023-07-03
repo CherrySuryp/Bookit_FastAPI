@@ -9,7 +9,7 @@ from app.bookings.schemas import SBooking
 from app.exceptions import (
     BookingDoesntExistException,
     BookingsDoesNotExistException,
-    RoomCanNotBeBooked,
+    RoomCanNotBeBooked, TooMuchDaysException, WrongDateEntryException,
 )
 from app.tasks.task import send_booking_confirmation_email
 from app.users.dependencies import get_current_user
@@ -36,13 +36,16 @@ async def add_booking(
     room_id: int,
     date_from: date,
     date_to: date,
-    email_to: EmailStr,
     user: Users = Depends(get_current_user),
 ):
+    if (date_to - date_from).days > 30:
+        raise TooMuchDaysException  # 403
+    if date_to < date_from:
+        raise WrongDateEntryException  # 400
     booking = await BookingDAO.add(user.id, room_id, date_from, date_to)
     if not booking:
-        raise RoomCanNotBeBooked
-    send_booking_confirmation_email.delay(email_to=email_to)
+        raise RoomCanNotBeBooked # 409
+    send_booking_confirmation_email.delay(email_to=user.email)
 
 
 @router.delete("")

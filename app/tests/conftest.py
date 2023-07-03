@@ -68,7 +68,7 @@ mock.patch("fastapi_cache.decorator.cache", mock_cache).start()
 # End of stolen block of code
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 async def ac():
     from app.main import app as fastapi_app  # Disables fastapi-cache during testing
 
