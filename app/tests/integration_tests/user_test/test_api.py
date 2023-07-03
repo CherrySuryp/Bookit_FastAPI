@@ -47,7 +47,7 @@ async def test_login_user(email, password, status_code, authenticated_ac: AsyncC
     [
         ("testt@test.com", "test", 200),
         ("artemm@example.com", "artem", 200),
-        ("iparkhipychev@gmail.com", 'mark', 200)
+        ("iparkhipychev@gmail.com", "mark", 200),
     ],
 )
 async def test_reg_login_logout(email, password, status_code, ac: AsyncClient):
